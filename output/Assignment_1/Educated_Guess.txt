@@ -1,0 +1,9 @@
+
+Trace A:
+High power peaks speak for a lot of calculation => Serial processing AES with small area and a long critical path delay.
+
+12 Peaks => 12 Rounds of AES.
+
+Trace B:
+Lower, faster peaks hint to T-Table AES.
+Pattern of 4 high peaks, followed by 1 lower peak repeats 4 times => 4 Round AES
