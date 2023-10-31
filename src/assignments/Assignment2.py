@@ -88,5 +88,5 @@ def start():
     start_key = timer()
     parallel(reader=reader)
     end_key = timer()
-    print(f"Time to load CSV: {end_csv - start_csv:.2f}")
-    print(f"Time to find key: {end_key - start_key:.2f}")
+    print(f"Time to load CSV: {end_csv - start_csv:.2f} seconds")
+    print(f"Time to find key: {end_key - start_key:.2f} seconds")
