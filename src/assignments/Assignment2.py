@@ -7,6 +7,7 @@ from src.framework.sbox import aes_sbox
 from src.framework.DiagramHandler import Diagram_Drawer
 from multiprocessing import Pool
 from scipy.stats import ttest_ind
+from timeit import default_timer as timer
 
 config.get_instance("Assignment 2")
 reader = None
@@ -50,31 +51,42 @@ def process_byte(byte, reader):
     max_diff = np.max(keyresults)
     max_id = np.argmax(keyresults)
 
-    dd: Diagram_Drawer = Diagram_Drawer(data=[keyresults,[4.5]*256,[4.5]*256])
+    dd: Diagram_Drawer = Diagram_Drawer(data=[keyresults,[4.5]*256,[-4.5]*256])
     dd.config.update({
         "plot_title": f'Key search for Byte {byte}, data points: {len(reader.data)}',
         "plot_to_display": False,
         "plot_to_disk": True,
         "x_label": "Key value in binary",
         "y_label": "t-Value",
-        "plot_annotation_at": [[(max_id, round(max_diff, 2)), f'Maximum at ({max_id}, {round(max_diff, 2)})']],
-        "plot_output_name": f"plot_k_t_{byte:02}.png"
+        "plot_annotation_at": {0: [(max_id, round(max_diff, 2)), f'Maximum at ({max_id}, {round(max_diff, 2)})']},
+        "plot_output_name": f"plot_k_t_{byte:02}.png",
+        "plot_line_colors": ['tab:red', 'tab:blue', 'tab:red']
     })
     dd.data_to_plot()
     print(f"Byte {byte} finished.")
-    return byte
+    return max_id
 
-BYTES_TO_CALC = 2
+BYTES_TO_CALC = 16
 def parallel(reader):
     with Pool() as pool:
-        pool.starmap(process_byte, [(b, reader) for b in range(BYTES_TO_CALC)])
+        results = pool.starmap(process_byte, [(b, reader) for b in range(BYTES_TO_CALC)])
+    print(f" => Found Key: {results}")
 
 def sequential(reader):
+    results = [0] * BYTES_TO_CALC
     for byte in range(0,BYTES_TO_CALC):
-        process_byte(byte,reader)
+        results[byte] = process_byte(byte,reader)
+    print(f" => Found Key: {results}")
+
 def start():
     global reader
     print("Start reading CSV. May take a while...")
-    reader = cr(filename="Timing_Noisy.csv")
+    start_csv = timer()
+    reader = cr(filename="Timing_Noisy .csv")
+    end_csv = timer()
     print("CSV reading done.")
+    start_key = timer()
     parallel(reader=reader)
+    end_key = timer()
+    print(f"Time to load CSV: {end_csv - start_csv:.2f}")
+    print(f"Time to find key: {end_key - start_key:.2f}")

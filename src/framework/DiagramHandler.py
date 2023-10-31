@@ -123,14 +123,15 @@ class Diagram_Drawer:
 
     def add_annotations(self, ax, trace) -> None:
         if self._config.get("plot_annotation_at", None) is not None:
-            entry = self._config.get("plot_annotation_at", [])[trace]
-            coords = entry[0]
-            text = entry[1]
-            ax.annotate(text, # this is the text
-                 coords, # these are the coordinates to position the label
-                 textcoords="offset points", # how to position the text
-                 xytext=(0,10), # distance from text to points (x,y)
-                 ha='center') # horizontal alignment can be left, right or center
+            entry = self._config.get("plot_annotation_at", []).get(trace, None)
+            if entry is not None:
+                coords = entry[0]
+                text = entry[1]
+                ax.annotate(text, # this is the text
+                     coords, # these are the coordinates to position the label
+                     textcoords="offset points", # how to position the text
+                     xytext=(0,10), # distance from text to points (x,y)
+                     ha='center') # horizontal alignment can be left, right or center
 
     def plot_to_file(self) -> None:
         """
